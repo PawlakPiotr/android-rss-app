@@ -18,7 +18,6 @@ https.get('https://www.tvn24.pl/najnowsze.xml', (res) => {
                 console.log('Got error: ' + err.message);
             } else {
                 eyes.inspect(result);
-                console.log('Done.');
             }
         });
     });
