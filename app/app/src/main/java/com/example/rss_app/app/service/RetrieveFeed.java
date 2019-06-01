@@ -73,8 +73,11 @@ public class RetrieveFeed extends AsyncTask {
         }
     }
 
-    public ArrayList<String> heads()
-    {
+    public ArrayList<String> heads() {
         return headlines;
+    }
+
+    public ArrayList<String> links() {
+        return links;
     }
 }
