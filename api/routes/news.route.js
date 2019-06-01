@@ -1,12 +1,9 @@
-const axios = require("axios");
 const xml2js = require('xml2js');
-const fs = require('fs');
 const https = require('https');
 const express = require("express");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-
 eyes = require('eyes');
+
+const News = require("../model/news");
 
 const router = express.Router();
 var parser = new xml2js.Parser();
@@ -37,6 +34,36 @@ router.get("/all", (req, response, next) => {
             console.log('Got error: ' + err.message);
         });
     });
+
+});
+
+router.post("/favourites/add", (req, response, next) => {
+    const news = new News({
+        email: req.body.email,
+        title: req.body.title,
+        description: req.body.description,
+        date: req.body.date
+      });
+      news.save().then(result => {
+        response.status(201).json({
+              message: "Article added to favourites",
+              result: result
+          });
+      })
+
+});
+
+router.post("/favourites", (req, response, next) => {
+    
+    News.find({email: req.body.email}, (res) => {
+        console.log(res);
+    }).then(x => {
+        console.log(x);
+        response.json({
+            message: "Favourites news fetched",
+            news: x
+        });
+    })
 
 });
 

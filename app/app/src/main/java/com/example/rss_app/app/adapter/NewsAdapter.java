@@ -1,6 +1,5 @@
 package com.example.rss_app.app.adapter;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -12,15 +11,16 @@ import android.widget.TextView;
 
 import com.example.rss_app.R;
 import com.example.rss_app.app.activity.ArticleActivity;
-import com.example.rss_app.app.activity.NewsActivity;
 import com.example.rss_app.app.model.Article;
 
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     private Article[] itemsData;
+    String user_email;
 
-    public NewsAdapter(Article[] itemsData) {
+    public NewsAdapter(Article[] itemsData, String user_email) {
         this.itemsData = itemsData;
+        this.user_email = user_email;
     }
 
     @Override
@@ -34,11 +34,11 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
 
         viewHolder.title.setText(itemsData[position].title);
-        viewHolder.desc.setText(itemsData[position].description);
-        viewHolder.date.setText(itemsData[position].date);
+        viewHolder.desc.setText(itemsData[position].description.substring(itemsData[position].description.indexOf(">")+20).substring(0, itemsData[position].description.length() > 40 ? 40 : itemsData[position].description.length()) + "...");
+        viewHolder.date.setText(itemsData[position].date.substring(0, itemsData[position].date.lastIndexOf(":")));
         viewHolder.imgViewIcon.setImageBitmap(itemsData[position].image);
 
         viewHolder.card.setOnClickListener(new View.OnClickListener() {
@@ -46,8 +46,11 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), ArticleActivity.class);
                 intent.putExtra("title", viewHolder.title.getText().toString());
-                intent.putExtra("desc", viewHolder.desc.getText().toString());
+                intent.putExtra("desc", itemsData[position].description.substring(itemsData[position].description.indexOf(">")+20));
                 intent.putExtra("date", viewHolder.date.getText().toString());
+                intent.putExtra("link", itemsData[position].link);
+
+                intent.putExtra("email", user_email);
 
                 view.getContext().startActivity(intent);
             }

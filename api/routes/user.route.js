@@ -30,19 +30,15 @@ router.post("/login", (req, res, next) => {
   User.findOne({ email: req.body.email, password: req.body.password })
     .then(user => {
       if (!user) {
-        return res.status(401).json({
-          message: "Auth failed"
-        });
+        res.json({ 
+          code: "401",
+          message: 'Account does not exists' });
+      } else {
+        res.json({ 
+          code: "200",
+          message: 'Login successful' });
       }
-      return res.status(201).json({
-        message: "Auth successfull"
-      });
     })
-    .catch(err => {
-      return res.status(401).json({
-        message: "Invalid authentication credentials!"
-      });
-    });
 });
 
 router.get("/all", (req, res, next) => {

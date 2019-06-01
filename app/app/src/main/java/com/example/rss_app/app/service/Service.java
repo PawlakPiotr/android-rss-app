@@ -1,23 +1,26 @@
 package com.example.rss_app.app.service;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
+
 
 public class Service {
 
-    private static final String PORT = "3000";
-    private static final String[] IP_ADDRESS = { "192.168.0.45", "10.0.2.2"};
-    private static final String[] PROTOCOL = {"http", "https"};
+    String PORT = "3000";
+    String[] IP_ADDRESS = { "192.168.0.45", "10.0.2.2"};
+    String[] PROTOCOL = {"http", "https"};
 
-    private static final String API_BASE_URL = PROTOCOL[0] + "://" + IP_ADDRESS[1] + ":" + PORT;
+    String API_BASE_URL = PROTOCOL[0] + "://" + IP_ADDRESS[0] + ":" + PORT;
 
-    private static final String RSS_FEED_URL = "https://www.tvn24.pl/najnowsze.xml";
+    static final String RSS_FEED_URL = "https://www.tvn24.pl/najnowsze.xml";
 
     public void get(String API_ENDPOINT) throws IOException {
         URL url = new URL(API_BASE_URL + API_ENDPOINT);
@@ -40,5 +43,12 @@ public class Service {
 
     public String getRssFeedUrl() {
         return RSS_FEED_URL;
+    }
+
+    public static String getString(JSONObject object, String tag, String defString) throws JSONException {
+        if (object.has(tag))
+            return object.getString(tag);
+        else
+            return defString;
     }
 }

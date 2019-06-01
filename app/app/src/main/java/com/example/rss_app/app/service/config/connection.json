@@ -1,0 +1,8 @@
+{
+  "PROTOCOL_HTTP" : "http",
+  "PROTOCOL_HTTPS" : "https",
+  "PORT" : "3000",
+  "IP_ADDRESS" : "192.168.0.45" ,
+  "IP_ADDRESS_EMULATOR" : "10.0.2.2",
+  "RSS_FEED_URL" : "https://www.tvn24.pl/najnowsze.xml"
+}

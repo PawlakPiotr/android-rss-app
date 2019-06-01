@@ -1,23 +1,45 @@
 package com.example.rss_app.app.activity;
 
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.rss_app.R;
+import com.example.rss_app.app.model.Article;
+import com.example.rss_app.app.service.ApiClient;
+import com.example.rss_app.app.service.IService;
 import com.example.rss_app.app.service.RetrieveFeed;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.sql.Ref;
 import java.util.ArrayList;
+
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.exceptions.OnErrorNotImplementedException;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button login_button, register_button;
     EditText email, password;
-    ArrayList<String> headlines;
+    ArrayList<String> headlines, links, desc, dates;
+    ArrayList<Article> news;
 
+
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
+    IService iService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,20 +47,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         setUpComponents();
-//        Service api_service = new Service();
-//        try {
-//            api_service.get("/api/news/all");
-//        } catch (IOException e) {
-//            System.out.print(R.string.API_FETCH_ERROR);
-//            e.printStackTrace();
-//        }
 
-        headlines = new ArrayList<>();
+        Retrofit apiClient = ApiClient.getInstance();
+        iService = apiClient.create(IService.class);
 
-        RetrieveFeed getXML = new RetrieveFeed();
-        getXML.execute();
-        headlines = getXML.heads();
+        retriveFeed();
 
+        news = new ArrayList<>();
     }
 
     private void setUpComponents() {
@@ -50,16 +65,59 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setButtonsListeners(new Button[]{login_button, register_button});
     }
 
-    private void login() {
-        System.out.println("### " + headlines);
-        startActivity(getSpecificIntent(NewsActivity.class));
+    private void retriveFeed() {
+        headlines = new ArrayList<>();
+        desc = new ArrayList<>();
+        dates = new ArrayList<>();
+
+        RetrieveFeed getXML = new RetrieveFeed(this);
+        getXML.execute();
+        headlines = getXML.heads();
+        desc = getXML.desc();
+        dates = getXML.date();
+        links = getXML.links();
+    }
+
+    private void login(final String email, String password) {
+        for (int i=0; i< headlines.size(); i++) {
+            news.add(new Article(headlines.get(i), desc.get(i), dates.get(i), null, links.get(i)));
+        }
+
+        if (!email.isEmpty() && !password.isEmpty())
+
+            compositeDisposable.add(iService.login(email, password).subscribeOn(
+                    Schedulers.io()
+            ).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                    new Consumer<String>() {
+                        @Override
+                        public void accept(String s) throws JSONException {
+
+                            JSONObject res = new JSONObject(s);
+
+                            if (res.getString("code").equals("200")) {
+                                Toast.makeText(MainActivity.this, res.getString("message"), Toast.LENGTH_SHORT).show();
+
+                                Intent intent = new Intent(getApplicationContext(), NewsActivity.class);
+                                intent.putParcelableArrayListExtra("news", news);
+                                intent.putExtra("email", email);
+
+                                startActivity(intent);
+                            } else{
+                                Toast.makeText(MainActivity.this, res.getString("message"), Toast.LENGTH_SHORT).show();
+                                clear();
+                            }
+                        }
+                    }));
+
+        else
+            Toast.makeText(MainActivity.this, "Fill in the email and password fields!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.login_button:
-                login();
+                login(email.getText().toString(), password.getText().toString());
                 break;
             case R.id.register_button:
                 startActivity(getSpecificIntent(RegisterActivity.class));
@@ -81,4 +139,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return intent;
     }
 
+    @Override
+    protected void onStop() {
+        compositeDisposable.clear();
+        super.onStop();
+    }
+
+    private void clear(){
+        email.setText("");
+        password.setText("");
+    }
 }

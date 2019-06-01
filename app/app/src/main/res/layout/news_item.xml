@@ -41,7 +41,7 @@
                 android:layout_marginBottom="30dp"
                 android:text="Piłkarze Urugwaju wygrali z Nową Zelandią 2:0 w ostatnim meczu grupy C..."
                 android:textAlignment="center"
-                android:textSize="18sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/date"

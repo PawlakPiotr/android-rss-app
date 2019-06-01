@@ -1,7 +1,11 @@
 package com.example.rss_app.app.service;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
+import com.example.rss_app.app.model.Article;
+
+import org.json.JSONException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -16,7 +20,17 @@ public class RetrieveFeed extends AsyncTask {
 
     URL url;
     ArrayList<String> headlines = new ArrayList();
+    ArrayList<String> desc = new ArrayList();
     ArrayList<String> links = new ArrayList();
+    ArrayList<String> dates = new ArrayList();
+
+    ArrayList<Article> news = new ArrayList<>();
+    Context context;
+
+    public RetrieveFeed(Context context) {
+        this.context = context;
+    }
+
 
     @Override
     protected Object doInBackground(Object[] objects) {
@@ -45,6 +59,12 @@ public class RetrieveFeed extends AsyncTask {
                     } else if (xpp.getName().equalsIgnoreCase("link")) {
                         if (insideItem)
                             links.add(xpp.nextText());
+                    } else if (xpp.getName().equalsIgnoreCase("description")) {
+                        if (insideItem)
+                            desc.add(xpp.nextText());
+                    } else if (xpp.getName().equalsIgnoreCase("pubDate")) {
+                        if (insideItem)
+                            dates.add(xpp.nextText());
                     }
                 } else if (eventType == XmlPullParser.END_TAG && xpp.getName().equalsIgnoreCase("item")) {
                     insideItem = false;
@@ -79,5 +99,24 @@ public class RetrieveFeed extends AsyncTask {
 
     public ArrayList<String> links() {
         return links;
+    }
+
+    public ArrayList<String> desc() {
+        return desc;
+    }
+
+    public ArrayList<String> date() {
+        return dates;
+    }
+
+    public ArrayList<Article> getNews() {
+
+        for (int i=0; i< headlines.size(); i++) {
+            news.add(
+                    new Article(headlines.get(i), desc.get(i), dates.get(i), null, links.get(i))
+            );
+        }
+
+        return news;
     }
 }
