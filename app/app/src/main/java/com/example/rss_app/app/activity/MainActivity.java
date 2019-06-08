@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void login(final String email, String password) {
         for (int i=0; i< headlines.size(); i++) {
-            String desc_modified = desc.get(0).replaceAll("amp;", "").substring(53).replaceAll("=50", "=650");
+            String desc_modified = desc.get(i).replaceAll("amp;", "").substring(53).replaceAll("=50", "=650");
             int index = desc_modified.indexOf("align")-2;
             String url = desc_modified.substring(0, index);
 

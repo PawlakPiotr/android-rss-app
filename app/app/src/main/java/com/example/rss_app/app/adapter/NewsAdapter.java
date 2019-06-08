@@ -3,7 +3,6 @@ package com.example.rss_app.app.adapter;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,12 +14,6 @@ import android.widget.TextView;
 import com.example.rss_app.R;
 import com.example.rss_app.app.activity.ArticleActivity;
 import com.example.rss_app.app.model.Article;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
@@ -51,10 +44,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         viewHolder.title.setText(itemsData[position].title);
         viewHolder.desc.setText(itemsData[position].description.contains("/>") ? desc : itemsData[position].description);
         viewHolder.date.setText(itemsData[position].date.substring(0, itemsData[position].date.lastIndexOf(":")));
-
-
-        System.out.println("IMAGE TO LOAD -> " + itemsData[position].image);
-
 
         @SuppressLint("StaticFieldLeak") ImageAsyncLoad obj = new ImageAsyncLoad(itemsData[position].image){
 
