@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     Button login_button, register_button;
     EditText email, password;
-    ArrayList<String> headlines, links, desc, dates;
+    ArrayList<String> headlines, links, desc, dates, images;
     ArrayList<Article> news;
 
 
@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         retriveFeed();
 
         news = new ArrayList<>();
+        System.out.println(headlines);
     }
 
     private void setUpComponents() {
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         headlines = new ArrayList<>();
         desc = new ArrayList<>();
         dates = new ArrayList<>();
+        images = new ArrayList<>();
 
         RetrieveFeed getXML = new RetrieveFeed(this);
         getXML.execute();
@@ -80,8 +82,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void login(final String email, String password) {
         for (int i=0; i< headlines.size(); i++) {
-            news.add(new Article(headlines.get(i), desc.get(i), dates.get(i), null, links.get(i)));
+            String desc_modified = desc.get(0).replaceAll("amp;", "").substring(53).replaceAll("=50", "=650");
+            int index = desc_modified.indexOf("align")-2;
+            String url = desc_modified.substring(0, index);
+
+            images.add(url);
+
+            news.add(new Article(headlines.get(i), desc.get(i), dates.get(i), images.get(i), links.get(i)));
         }
+
 
         if (!email.isEmpty() && !password.isEmpty())
 
@@ -100,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 Intent intent = new Intent(getApplicationContext(), NewsActivity.class);
                                 intent.putParcelableArrayListExtra("news", news);
                                 intent.putExtra("email", email);
+                                intent.putExtra("fav", "true");
 
                                 startActivity(intent);
                             } else{

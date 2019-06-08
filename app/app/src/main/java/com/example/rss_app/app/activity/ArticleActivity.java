@@ -1,6 +1,8 @@
 package com.example.rss_app.app.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.rss_app.R;
+import com.example.rss_app.app.adapter.ImageAsyncLoad;
 import com.example.rss_app.app.service.ApiClient;
 import com.example.rss_app.app.service.IService;
 
@@ -46,7 +49,19 @@ public class ArticleActivity extends AppCompatActivity {
         title.setText(getIntent().getStringExtra("title") != null ? getIntent().getStringExtra("title") : "");
         content.setText(getIntent().getStringExtra("desc") != null ? getIntent().getStringExtra("desc") : "");
 
-        img.setImageBitmap(null); // TODO set article image
+
+        @SuppressLint("StaticFieldLeak") ImageAsyncLoad obj = new ImageAsyncLoad(
+                getIntent().getStringExtra("image") != null ? getIntent().getStringExtra("image") : ""
+        ){
+
+            @Override
+            protected void onPostExecute(Bitmap bmp) {
+                super.onPostExecute(bmp);
+                img.setImageBitmap(bmp);
+            }
+        };
+
+        obj.execute();
 
         Retrofit apiClient = ApiClient.getInstance();
         iService = apiClient.create(IService.class);

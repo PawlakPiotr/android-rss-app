@@ -8,9 +8,9 @@ import android.os.Parcelable;
 public class Article implements Parcelable {
 
     public String title, description, date, link;
-    public Bitmap image;
+    public String image;
 
-    public Article(String title, String description, String date, Bitmap image, String link) {
+    public Article(String title, String description, String date, String image, String link) {
         this.title = title;
         this.description = description;
         this.date = date;
@@ -34,6 +34,7 @@ public class Article implements Parcelable {
         description = source.readString();
         date = source.readString();
         link = source.readString();
+        image = source.readString();
     }
 
     @Override
@@ -47,6 +48,7 @@ public class Article implements Parcelable {
         parcel.writeString(description);
         parcel.writeString(date);
         parcel.writeString(link);
+        parcel.writeString(image);
     }
 
     public static final Creator<Article> CREATOR = new Creator<Article>(){

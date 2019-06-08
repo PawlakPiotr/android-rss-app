@@ -1,6 +1,7 @@
 package com.example.rss_app.app.service;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
 import com.example.rss_app.app.model.Article;
@@ -23,6 +24,7 @@ public class RetrieveFeed extends AsyncTask {
     ArrayList<String> desc = new ArrayList();
     ArrayList<String> links = new ArrayList();
     ArrayList<String> dates = new ArrayList();
+    ArrayList<String> images = new ArrayList();
 
     ArrayList<Article> news = new ArrayList<>();
     Context context;
@@ -60,8 +62,12 @@ public class RetrieveFeed extends AsyncTask {
                         if (insideItem)
                             links.add(xpp.nextText());
                     } else if (xpp.getName().equalsIgnoreCase("description")) {
-                        if (insideItem)
+                        if (insideItem) {
                             desc.add(xpp.nextText());
+
+//                            String url = xpp.nextText().substring(19, xpp.nextText().indexOf("quality=80")).replaceAll("amp;", "");
+                        //    images.add(url);
+                        }
                     } else if (xpp.getName().equalsIgnoreCase("pubDate")) {
                         if (insideItem)
                             dates.add(xpp.nextText());
@@ -108,6 +114,8 @@ public class RetrieveFeed extends AsyncTask {
     public ArrayList<String> date() {
         return dates;
     }
+
+    public ArrayList<String> images() { return images; }
 
     public ArrayList<Article> getNews() {
 

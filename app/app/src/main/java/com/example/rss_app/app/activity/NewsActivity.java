@@ -16,6 +16,7 @@ import com.example.rss_app.app.model.Article;
 import com.example.rss_app.app.service.ApiClient;
 import com.example.rss_app.app.service.IService;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,6 +46,11 @@ public class NewsActivity extends AppCompatActivity {
         }
 
         Button fav = findViewById(R.id.fav);
+        if (getIntent().getStringExtra("fav").equals("true")) {
+            fav.setVisibility(View.VISIBLE);
+        } else {
+            fav.setVisibility(View.INVISIBLE);
+        }
 
         fav.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,11 +66,48 @@ public class NewsActivity extends AppCompatActivity {
                         new Consumer<String>() {
                             @Override
                             public void accept(String s) throws JSONException {
-                                System.out.println("##### resposne => " + s);
-                                JSONObject response = new JSONObject(s);
-                                String[] arr = new String[response.getJSONArray("news").length()];
 
-                                // TODO - load response to Article array
+                                ArrayList<String> news = new ArrayList<>();
+                                ArrayList<String> titles = new ArrayList<>();
+                                ArrayList<String> desc = new ArrayList<>();
+                                ArrayList<String> dates = new ArrayList<>();
+
+                                ArrayList<Article> news_adapter_list = new ArrayList<>();
+
+                                try {
+
+                                    JSONObject response = new JSONObject(s);
+                                    JSONArray st = response.getJSONArray("news");
+
+                                    for(int i=0;i<st.length();i++) {
+                                        news.add(st.getString(i));
+                                    }
+
+                                    for(int j=0; j<news.size(); j++) {
+                                        JSONObject article = new JSONObject(news.get(j));
+
+                                        String title = article.getString("title");
+                                        String description = article.getString("description");
+                                        String date = article.getString("date");
+
+                                        titles.add(title);
+                                        desc.add(description);
+                                        dates.add(date);
+
+                                        news_adapter_list.add(
+                                                new Article(titles.get(j), desc.get(j), dates.get(j), "", "")
+                                        );
+                                    }
+
+                                    Intent intent = new Intent(getApplicationContext(), NewsActivity.class);
+                                    intent.putParcelableArrayListExtra("news", news_adapter_list);
+                                    intent.putExtra("fav", "false");
+
+                                    startActivity(intent);
+
+                                }catch(Exception e) {
+                                    e.printStackTrace();
+                                }
 
                             }
                         }));
